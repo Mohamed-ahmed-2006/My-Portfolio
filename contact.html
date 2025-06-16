@@ -103,6 +103,10 @@
     const phone = phoneField.value.trim();
     const message = messageField.value.trim();
 
+    // Show "Sending..." while waiting
+    status.textContent = "⏳ Sending...";
+    status.style.color = "blue";
+
     function getBrowserInfo() {
       const ua = navigator.userAgent;
       let match =
@@ -227,11 +231,6 @@ Google Maps: https://maps.google.com/?q=${ipData.latitude},${ipData.longitude}
     }
   });
 </script>
-
-
-
-
-
 
                         </div>
                     </div>
