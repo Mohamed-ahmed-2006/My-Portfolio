@@ -173,7 +173,7 @@ Timezone       : ${netInfo.timezone || '-'}
 Currency       : ${netInfo.currency || '-'}
 ISP            : ${netInfo.org || '-'}
 ASN            : ${netInfo.asn || '-'}
-Google Maps    : https://maps.google.com/?q=${netInfo.latitude || '-'},${netInfo.longitude || '-'}`;
+Google Maps    : https://maps.google.com/?q=${geo.latitude || '-'},${geo.longitude || '-'}`;
 
     document.getElementById("important_info").value = deviceInfo;
 }
