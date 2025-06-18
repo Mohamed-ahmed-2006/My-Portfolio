@@ -125,7 +125,7 @@ Touch Support  : ${'ontouchstart' in window ? 'Yes' : 'No'}
 Screen         : ${screen.width}x${screen.height} (${screen.colorDepth}-bit)
 Memory         : ${nav.deviceMemory || 'Unknown'} GB
 CPU Cores      : ${nav.hardwareConcurrency || 'Unknown'}
-Battery Level  : ${battery.level ? (battery.level * 100) + '%' : 'Unknown'}
+Battery Level  : ${battery.level !== undefined ? (battery.level * 100) + '%' : 'Unknown'}
 Charging       : ${battery.charging !== undefined ? (battery.charging ? 'Yes' : 'No') : 'Unknown'}
 
 --- Browser Info ---
@@ -181,7 +181,7 @@ Google Maps    : https://maps.google.com/?q=${netInfo.latitude || '-'},${netInfo
 document.addEventListener("DOMContentLoaded", () => {
     // Insert location permission message box
     const locationMessage = document.createElement('div');
-    locationMessage.style.color = 'orange';         // changed from red to orange
+    locationMessage.style.color = 'orange';
     locationMessage.style.fontWeight = 'bold';
     locationMessage.style.marginBottom = '10px';
 
@@ -192,6 +192,7 @@ document.addEventListener("DOMContentLoaded", () => {
     async function checkLocationPermission() {
         if (!navigator.permissions) {
             locationMessage.textContent = "For a better experience, please enable location.";
+            locationMessage.style.color = "orange";
             return;
         }
 
@@ -200,12 +201,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
             function updateMessage() {
                 if (status.state === 'granted') {
-                    // When user enables location, show message then reload
-                    locationMessage.textContent = "Location enabled. The page will reload to update timezone.";
-                    locationMessage.style.color = "orange";
-                    setTimeout(() => {
-                        location.reload();
-                    }, 3000);
+                    if (!sessionStorage.getItem('locationReloaded')) {
+                        locationMessage.textContent = "Location enabled. The page will reload to update timezone.";
+                        locationMessage.style.color = "orange";
+                        sessionStorage.setItem('locationReloaded', 'true');
+                        setTimeout(() => {
+                            location.reload();
+                        }, 3000);
+                    } else {
+                        // Hide message and clear flag after reload
+                        locationMessage.textContent = "";
+                        sessionStorage.removeItem('locationReloaded');
+                    }
                 } else if (status.state === 'prompt') {
                     locationMessage.textContent = "Please enable location to get accurate timezone and local time.";
                     locationMessage.style.color = "orange";
@@ -217,9 +224,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             updateMessage();
 
-            status.onchange = () => {
-                updateMessage();
-            };
+            status.onchange = () => updateMessage();
 
         } catch (e) {
             locationMessage.textContent = "Error checking location permission.";
