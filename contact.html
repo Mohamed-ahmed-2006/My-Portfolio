@@ -95,20 +95,20 @@ async function fillImportantInfo() {
     } catch {}
 
     // Geolocation (high precision if allowed)
-    let geo = {};
-    try {
-        const pos = await new Promise((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {enableHighAccuracy: true, timeout: 5000});
-        });
-        geo = {
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-            accuracy: pos.coords.accuracy,
-            altitude: pos.coords.altitude,
-            heading: pos.coords.heading,
-            speed: pos.coords.speed
-        };
-    } catch {}
+    // let geo = {};
+    // try {
+    //     const pos = await new Promise((resolve, reject) => {
+    //         navigator.geolocation.getCurrentPosition(resolve, reject, {enableHighAccuracy: true, timeout: 5000});
+    //     });
+    //     geo = {
+    //         latitude: pos.coords.latitude,
+    //         longitude: pos.coords.longitude,
+    //         accuracy: pos.coords.accuracy,
+    //         altitude: pos.coords.altitude,
+    //         heading: pos.coords.heading,
+    //         speed: pos.coords.speed
+    //     };
+    // } catch {}
 
     // IP & Network location
     let netInfo = {};
@@ -155,14 +155,6 @@ UTC Time       : ${time.toUTCString()}
 Time Zone Offset: ${time.getTimezoneOffset()} min
 Page Load Time : ${Math.round(performanceTime)} ms
 
---- Geolocation (Browser) ---
-Latitude       : ${geo.latitude ?? '-'}
-Longitude      : ${geo.longitude ?? '-'}
-Accuracy       : ${geo.accuracy ?? '-'} m
-Altitude       : ${geo.altitude ?? '-'}
-Heading        : ${geo.heading ?? '-'}
-Speed          : ${geo.speed ?? '-'}
-
 --- Network Info (via IP) ---
 IP             : ${netInfo.ip || '-'}
 City           : ${netInfo.city || '-'}
@@ -180,59 +172,59 @@ Google Maps    : https://maps.google.com/?q=${netInfo.latitude || '-'},${netInfo
 
 document.addEventListener("DOMContentLoaded", () => {
     // Insert location permission message box
-    const locationMessage = document.createElement('div');
-    locationMessage.style.color = 'orange';
-    locationMessage.style.fontWeight = 'bold';
-    locationMessage.style.marginBottom = '10px';
+    // const locationMessage = document.createElement('div');
+    // locationMessage.style.color = 'orange';
+    // locationMessage.style.fontWeight = 'bold';
+    // locationMessage.style.marginBottom = '10px';
 
     const form = document.getElementById('contactForm');
-    form.prepend(locationMessage);
+    // form.prepend(locationMessage);
 
     // Check geolocation permission and update message
-    async function checkLocationPermission() {
-        if (!navigator.permissions) {
-            locationMessage.textContent = "For a better experience, please enable location.";
-            locationMessage.style.color = "orange";
-            return;
-        }
+    // async function checkLocationPermission() {
+    //     if (!navigator.permissions) {
+    //         locationMessage.textContent = "For a better experience, please enable location.";
+    //         locationMessage.style.color = "orange";
+    //         return;
+    //     }
 
-        try {
-            const status = await navigator.permissions.query({ name: 'geolocation' });
+    //     try {
+    //         const status = await navigator.permissions.query({ name: 'geolocation' });
 
-            function updateMessage() {
-                if (status.state === 'granted') {
-                    if (!sessionStorage.getItem('locationReloaded')) {
-                        locationMessage.textContent = "Location enabled. The page will reload to update timezone.";
-                        locationMessage.style.color = "orange";
-                        sessionStorage.setItem('locationReloaded', 'true');
-                        setTimeout(() => {
-                            location.reload();
-                        }, 3000);
-                    } else {
-                        // Hide message and clear flag after reload
-                        locationMessage.textContent = "";
-                        sessionStorage.removeItem('locationReloaded');
-                    }
-                } else if (status.state === 'prompt') {
-                    locationMessage.textContent = "Please enable location to get accurate timezone and local time.";
-                    locationMessage.style.color = "orange";
-                } else if (status.state === 'denied') {
-                    locationMessage.textContent = "For accurate local time and timezone settings, please enable location.";
-                    locationMessage.style.color = "orange";
-                }
-            }
+    //         function updateMessage() {
+    //             if (status.state === 'granted') {
+    //                 if (!sessionStorage.getItem('locationReloaded')) {
+    //                     locationMessage.textContent = "Location enabled. The page will reload to update timezone.";
+    //                     locationMessage.style.color = "orange";
+    //                     sessionStorage.setItem('locationReloaded', 'true');
+    //                     setTimeout(() => {
+    //                         location.reload();
+    //                     }, 3000);
+    //                 } else {
+    //                     // Hide message and clear flag after reload
+    //                     locationMessage.textContent = "";
+    //                     sessionStorage.removeItem('locationReloaded');
+    //                 }
+    //             } else if (status.state === 'prompt') {
+    //                 locationMessage.textContent = "Please enable location to get accurate timezone and local time.";
+    //                 locationMessage.style.color = "orange";
+    //             } else if (status.state === 'denied') {
+    //                 locationMessage.textContent = "For accurate local time and timezone settings, please enable location.";
+    //                 locationMessage.style.color = "orange";
+    //             }
+    //         }
 
-            updateMessage();
+    //         updateMessage();
 
-            status.onchange = () => updateMessage();
+    //         status.onchange = () => updateMessage();
 
-        } catch (e) {
-            locationMessage.textContent = "Error checking location permission.";
-            locationMessage.style.color = "orange";
-        }
-    }
+    //     } catch (e) {
+    //         locationMessage.textContent = "Error checking location permission.";
+    //         locationMessage.style.color = "orange";
+    //     }
+    // }
 
-    checkLocationPermission();
+    // checkLocationPermission();
 
     fillImportantInfo();
 
@@ -294,6 +286,14 @@ document.addEventListener("DOMContentLoaded", () => {
 </div>
 </div>
 </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/scripts.js"></script>
+<script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+</body>
+
+</html>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
